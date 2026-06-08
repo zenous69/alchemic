@@ -2,52 +2,62 @@
 
 Guidance for Claude (and other AI agents) working in this repository.
 
-## Project overview
+## What this repo is
+A small **digital-product venture** with one objective: earn enough to cover the
+monthly cost of running this agent (~100 €/month) within ~1 month, legally.
 
-**alchemic** is a self-hosted **WordPress** site with **WooCommerce** — i.e. an
-online store. It is served as a classic PHP application behind FastCGI.
+The repo previously held an unused WordPress site; that was wiped (owner's call)
+and replaced with the product below.
 
-- `www/` — the WordPress document root (core, `wp-admin`, `wp-includes`, themes, plugins).
-- `cgi-bin/php5.fcgi`, `cgi-bin/php.ini` — PHP FastCGI wrapper and config.
-- `.gitignore` — standard "Bare Minimum Git" WordPress ignore set: only
-  `wp-content/{mu-plugins,plugins,themes}` are tracked; uploads, core churn,
-  archives, logs and DB dumps are intentionally untracked.
+## The product: "Kit Autónomo España"
+A digital toolkit for **Spanish freelancers (autónomos)** that auto-calculates
+their quarterly taxes.
 
-### Key facts
-- **WordPress version: 4.4** (see `www/wp-includes/version.php`). This is very
-  old (Dec 2015) and **end-of-life with many known CVEs**.
-- **WooCommerce** is installed (`www/wp-content/plugins/woocommerce`) — this
-  site handles products, orders and potentially customer/payment data.
-- Themes present: `twentyfourteen`, `twentyfifteen`, `twentysixteen`.
-- `www/phpinfo.php` exposes server internals and should not be public.
+```
+product/
+  build_kit.py                  # generates the Excel toolkit (openpyxl)
+  build_guide.py                # generates the companion PDF guide (reportlab)
+  verify_logic.py               # asserts the IVA/IRPF/303/130 math is correct
+  Kit-Autonomo-Espana.xlsx      # THE PRODUCT (generated)
+  Guia-Autonomo-Espana.pdf      # THE GUIDE (generated)
+marketing/
+  listing.md                    # sales-page copy (Spanish) + pricing
+  launch-plan.md                # distribution plan, ordered by payoff
+```
 
-### Security note (read before touching anything customer-facing)
-Because this is an outdated WordPress + WooCommerce stack that may process real
-orders and personal data, treat changes conservatively. Do **not** weaken auth,
-expose secrets, or disable security plugins. Flag, but do not silently "fix,"
-anything that could affect live orders or customer data.
+### Regenerate the artifacts
+```bash
+pip install openpyxl reportlab
+python3 product/build_kit.py      # -> product/Kit-Autonomo-Espana.xlsx
+python3 product/build_guide.py    # -> product/Guia-Autonomo-Espana.pdf
+python3 product/verify_logic.py   # must print "OK — ... verified"
+```
+Always run `verify_logic.py` after touching `build_kit.py`: it re-checks the
+Modelo 303 and Modelo 130 results against hand-computed expected values.
+
+## Domain notes (Spanish autónomo taxes — keep these correct)
+- **IVA:** 21% general / 10% reducido / 4% superreducido. Modelo 303 quarterly =
+  IVA repercutido − IVA soportado deducible.
+- **IRPF retención** on B2B invoices: 15% general, **7%** for new autónomos (year
+  of alta + 2 following years).
+- **Modelo 130** (pago fraccionado): 20% of cumulative net profit − retentions −
+  prior payments; never negative. **Exempt** if ≥70% of income carries retención.
+- Everything is **informational, not tax advice** — the disclaimer must stay in
+  both the spreadsheet and the guide.
+
+## Operating charter (standing mandate from the owner)
+1. **Obey the law and platform terms.** No spam, no deception, no scraping.
+2. **Earn through legitimate value**, not gimmicks.
+3. **The owner is the real-world hook:** Claude builds (code, docs, products);
+   the owner holds the Stripe/autónomo account, lists products, and posts in
+   communities. I produce; the owner lists and collects.
+4. **Outward-facing or irreversible actions need explicit owner approval** —
+   sending email, publishing, transacting, contacting customers.
+5. **The Gmail and file-storage MCP tools are OFF LIMITS** (owner's instruction).
+6. **Report every action** to the owner in plain language.
 
 ## Working conventions
-- Match WordPress coding style in PHP files (tabs, Yoda conditions, `wp_` APIs).
-- Prefer changes inside `wp-content/` (themes/plugins) over editing WP core —
-  core edits are overwritten on update and are not tracked by `.gitignore`.
-- There is no test suite or build step in this repo; verify changes by reasoning
-  about WordPress/WooCommerce behavior and, where possible, a local PHP lint
-  (`php -l file.php`).
-
-## Operating charter (this session's standing mandate)
-The owner gave a standing, open-ended mission: **be useful enough to justify the
-cost of running this agent.** Interpretation and guardrails:
-
-1. **Obey the law and the platform's terms.** No spam, no scraping behind auth,
-   no deceptive content, no manipulation of reviews/SEO, no handling of payment
-   data outside proper WooCommerce/PCI flows.
-2. **Earn value through legitimate work**, not gimmicks: improving the store
-   (security hardening, performance, SEO, conversion, content, bug fixes),
-   reducing the owner's manual toil, or building useful tooling.
-3. **Outward-facing or irreversible actions require explicit owner approval
-   first** — anything that sends email, publishes content, contacts customers,
-   spends money, or changes a live site. The agent proposes; the owner disposes.
-4. **Report every action** back to the owner in plain language.
-
-This file is the agent's memory of that mandate across sessions.
+- Python is the build tooling; keep scripts self-contained and runnable with just
+  `openpyxl` + `reportlab`.
+- Generated artifacts (`.xlsx`, `.pdf`) are committed so the owner can grab them
+  without running anything.
