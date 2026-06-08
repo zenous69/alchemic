@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora IVA e IRPF para autónomos (Modelo 303 y 130) | Kit Autónomo España</title>
+<meta name="description" content="Calculadora gratuita del IVA (Modelo 303) y del pago a cuenta de IRPF (Modelo 130) para autónomos en España. Mete tus ingresos y gastos del trimestre y mira lo que toca pagar.">
+<meta name="keywords" content="calculadora IVA autónomo, calculadora IRPF, modelo 303, modelo 130, autónomo España, impuestos autónomo, retención IRPF">
+<meta property="og:title" content="Calculadora IVA e IRPF para autónomos (Modelo 303 y 130)">
+<meta property="og:description" content="Calcula gratis lo que pagas cada trimestre como autónomo en España.">
+<meta property="og:type" content="website">
+<style>
+  :root{--navy:#1F3A5F;--blue:#2E5C8A;--accent:#F2C200;--light:#DCE6F1;--grey:#666;--ink:#222}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.55;background:#f7f9fc}
+  header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:48px 20px 40px;text-align:center}
+  header h1{margin:0 0 10px;font-size:2rem;line-height:1.2}
+  header p{margin:0 auto;max-width:620px;font-size:1.05rem;opacity:.95}
+  .accent-bar{height:4px;width:80px;background:var(--accent);margin:18px auto 0;border-radius:2px}
+  main{max-width:880px;margin:-28px auto 0;padding:0 16px 60px}
+  .card{background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(31,58,95,.10);padding:26px;margin-bottom:24px}
+  h2{color:var(--navy);margin-top:0;font-size:1.3rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:620px){.grid{grid-template-columns:1fr}header h1{font-size:1.55rem}}
+  label{display:block;font-size:.86rem;color:var(--grey);margin:0 0 4px;font-weight:600}
+  input,select{width:100%;padding:10px 12px;border:1px solid #cdd7e5;border-radius:9px;font-size:1rem;background:#fff}
+  input:focus,select:focus{outline:2px solid var(--blue);border-color:var(--blue)}
+  .field{margin-bottom:14px}
+  .results{margin-top:8px}
+  .row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #eef2f7;font-size:1rem}
+  .row span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+  .row.total{border-bottom:none;margin-top:8px;background:var(--accent);border-radius:10px;padding:14px 16px;font-weight:700;font-size:1.12rem;color:var(--navy)}
+  .muted{color:var(--grey);font-size:.85rem}
+  .cta{display:block;text-align:center;background:var(--accent);color:var(--navy);font-weight:800;text-decoration:none;padding:16px;border-radius:12px;font-size:1.1rem;margin-top:6px;transition:transform .1s}
+  .cta:hover{transform:translateY(-2px)}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .pill{background:var(--light);color:var(--navy);padding:5px 12px;border-radius:20px;font-size:.82rem;font-weight:600}
+  footer{text-align:center;padding:30px 20px;color:var(--grey);font-size:.8rem}
+  .disclaimer{font-size:.78rem;color:var(--grey);background:#fff8e6;border:1px solid #f0e2b6;border-radius:10px;padding:12px 14px;margin-top:18px}
+  .check{margin-top:14px}.check label{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ink)}
+  .check input{width:auto}
+</style>
+</head>
+<body>
+<header>
+  <h1>Calculadora de IVA e IRPF para autónomos</h1>
+  <p>Mete tus ingresos y gastos del trimestre y mira al instante lo que sale en el <b>Modelo 303</b> (IVA) y una estimación del <b>Modelo 130</b> (IRPF). Gratis y sin registro.</p>
+  <div class="accent-bar"></div>
+</header>
+<main>
+  <div class="card">
+    <h2>Tu trimestre</h2>
+    <div class="grid">
+      <div>
+        <div class="field"><label>Ingresos del trimestre (base, sin IVA)</label><input id="ingresos" type="number" min="0" value="6000"></div>
+        <div class="field"><label>IVA que repercutes</label>
+          <select id="ivaRep"><option value="21">21% (general)</option><option value="10">10% (reducido)</option><option value="4">4% (superreducido)</option><option value="0">0% (exento)</option></select></div>
+        <div class="check"><label><input id="nuevo" type="checkbox"> Soy nuevo autónomo (retención 7%)</label></div>
+      </div>
+      <div>
+        <div class="field"><label>Gastos deducibles del trimestre (base, sin IVA)</label><input id="gastos" type="number" min="0" value="1200"></div>
+        <div class="field"><label>IVA soportado en gastos</label>
+          <select id="ivaSop"><option value="21">21% (general)</option><option value="10">10% (reducido)</option><option value="4">4%</option><option value="0">0%</option></select></div>
+        <div class="field"><label>% de tus ingresos que llevan retención IRPF</label><input id="pctRet" type="number" min="0" max="100" value="100"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Resultado del trimestre</h2>
+    <div class="results">
+      <div class="row"><span>IVA repercutido (cobrado)</span><span id="r_ivaRep">—</span></div>
+      <div class="row"><span>IVA soportado deducible</span><span id="r_ivaSop">—</span></div>
+      <div class="row total"><span>Modelo 303 — IVA a ingresar</span><span id="r_303">—</span></div>
+
+      <div class="row" style="margin-top:18px"><span>Rendimiento neto (ingresos − gastos)</span><span id="r_neto">—</span></div>
+      <div class="row"><span>Retenciones IRPF ya soportadas</span><span id="r_ret">—</span></div>
+      <div class="row total"><span>Modelo 130 — IRPF estimado</span><span id="r_130">—</span></div>
+    </div>
+    <p class="muted" id="exento" style="margin-top:14px"></p>
+    <p class="muted">El Modelo 130 real es <b>acumulativo</b> durante el año (resta los pagos de trimestres anteriores). Esto es la estimación de un trimestre aislado. La hoja de cálculo lo lleva automáticamente y acumulado.</p>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <h2>¿Y si lo llevaras todo el año en piloto automático?</h2>
+    <p>El <b>Kit Autónomo España</b> es una hoja de cálculo lista para usar: apuntas facturas y gastos y te calcula sola el 303 y el 130 de cada trimestre, el resumen anual y una plantilla de facturas. Incluye una guía en PDF.</p>
+    <div class="pills" style="justify-content:center">
+      <span class="pill">Modelo 303 automático</span><span class="pill">Modelo 130 acumulado</span>
+      <span class="pill">Resumen anual</span><span class="pill">Plantilla de factura</span><span class="pill">Guía PDF</span>
+    </div>
+    <a class="cta" id="ctaBuy" href="https://TU-ENLACE-DE-VENTA" style="margin-top:20px">Conseguir el Kit completo →</a>
+    <p class="muted" style="margin-top:10px">¿Prefieres probar antes? Descarga la <a id="ctaFree" href="https://TU-ENLACE-GRATIS">versión gratuita</a>.</p>
+  </div>
+
+  <div class="disclaimer">⚠️ Herramienta informativa, <b>no asesoramiento fiscal</b>. Los tipos y reglas pueden cambiar y existen casos particulares (recargo de equivalencia, operaciones intracomunitarias, módulos, etc.). Verifica siempre con tu asesor o con la Agencia Tributaria.</div>
+</main>
+<footer>Kit Autónomo España · Hecho para freelancers que quieren sus números claros.</footer>
+
+<script>
+  const $=id=>document.getElementById(id);
+  const eur=n=>n.toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+  function calc(){
+    const ing=+$('ingresos').value||0, gas=+$('gastos').value||0;
+    const ivaRepP=+$('ivaRep').value, ivaSopP=+$('ivaSop').value;
+    const retP=$('nuevo').checked?7:15, pctRet=Math.min(100,Math.max(0,+$('pctRet').value||0));
+    const ivaRep=ing*ivaRepP/100, ivaSop=gas*ivaSopP/100;
+    const m303=ivaRep-ivaSop;
+    const neto=ing-gas;
+    const ret=ing*(pctRet/100)*(retP/100);
+    let m130=Math.max(0, neto*0.20 - ret);
+    $('r_ivaRep').textContent=eur(ivaRep);
+    $('r_ivaSop').textContent=eur(ivaSop);
+    $('r_303').textContent=(m303>=0?eur(m303)+' a pagar':eur(-m303)+' a compensar');
+    $('r_neto').textContent=eur(neto);
+    $('r_ret').textContent=eur(ret);
+    const exento = pctRet>=70;
+    $('r_130').textContent = exento ? '0,00 € (exento)' : eur(m130);
+    $('exento').innerHTML = exento
+      ? '✅ Con ≥70% de tus ingresos con retención, normalmente estás <b>exento del Modelo 130</b>.'
+      : '';
+  }
+  ['ingresos','gastos','ivaRep','ivaSop','pctRet','nuevo'].forEach(id=>{
+    $(id).addEventListener('input',calc); $(id).addEventListener('change',calc);
+  });
+  calc();
+</script>
+</body>
+</html>
